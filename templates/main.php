@@ -129,9 +129,9 @@
             $.each(data, function(i, item) { 
                 var active = item.active ? 'active' : '';              
                 $(".carousel-inner").append(`<div class="carousel-item ${active}">
-                                <div class="card text-white border-light">
+                                <div class="card border-light">
                                     <img class="card-img-top" src="${item.image_url}">
-                                    <div class="card-footer bg-danger text-white">
+                                    <div class="card-footer ${item.color} ${item.textstyle}">
                                         ${item.label}
                                     </div>
                                 </div>
