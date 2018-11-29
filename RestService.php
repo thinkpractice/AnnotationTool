@@ -1,9 +1,12 @@
 <?php
 
+require 'vendor/autoload.php';
+
 $router = new AltoRouter();
+$router->setBasePath('/AnnotationTool/');
 
 // setup routes here
-$router->map('GET', '/images/', function(){
+$router->map('GET', '/get_images/', function(){
     require __DIR__ . 'Images.php';
 });
 
