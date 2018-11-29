@@ -132,7 +132,7 @@
                                 <div class="card text-white border-light">
                                     <img class="card-img-top" src="${item.image_url}">
                                     <div class="card-footer bg-danger text-white">
-                                        ${item.image_label}
+                                        ${item.label}
                                     </div>
                                 </div>
                               </div>`);
