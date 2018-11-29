@@ -36,30 +36,7 @@
       <div class="col-3 m-5">
           <div id="imageCarousel" data-interval="false" class="carousel slide" data-ride="carousel">
               <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="card text-white border-light">  
-                        <img class="card-img-top" src="Images/3c169b7e-fce0-4af9-b0ec-510532accce6_rgb_2016.png">
-                        <div class="card-footer text-muted">
-                          Unknown
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="card text-white border-light">  
-                        <img class="card-img-top" src="Images/3c5e8fdf-812f-4fcc-8095-5a6226562a89_rgb_2016.png">
-                        <div class="card-footer text-muted">
-                          Unknown
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="card text-white border-light">  
-                        <img class="card-img-top" src="Images/8ad7a8ea-2f48-47fb-84f2-ade5edf146fc_rgb_2016.png">
-                        <div class="card-footer text-muted">
-                          Unknown
-                        </div>
-                    </div>
-                </div>
+                
               </div>
               <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -123,7 +100,7 @@
   </div>
 
   <!-- JavaScript libraries needed-->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script  src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
   <script src="https://api.jquery.com/resources/events.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> 
@@ -145,6 +122,22 @@
     var msg = "Handler for .keypress() called " + xTriggered + " time(s).";
     $.print( msg, "html" );
     $.print( event );*/
+  });
+
+  $(document).ready(function() {
+    $.getJSON("get_images/").done(function(data){
+            $.each(data, function(i, item) { 
+                var active = item.active ? 'active' : '';              
+                $(".carousel-inner").append(`<div class="carousel-item ${active}">
+                                <div class="card text-white border-light">
+                                    <img class="card-img-top" src="${item.image_url}">
+                                    <div class="card-footer bg-danger text-white">
+                                        ${item.image_label}
+                                    </div>
+                                </div>
+                              </div>`);
+            }); 
+      });
   });
 
 </script>
