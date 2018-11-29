@@ -34,7 +34,7 @@
   <div class="container-fluid"> 
     <div class="row justify-content-center">
       <div class="col-3 m-5">
-          <div id="imageCarousel" data-interval="false" class="carousel slide" data-ride="carousel">
+            <div id="imageCarousel" data-interval="false" class="carousel slide" data-ride="carousel">
               <div class="carousel-inner">
                 
               </div>
@@ -52,51 +52,10 @@
     <div class="row">
       <div class="col-12">
         <div class="card-deck">
-            <div class="card text-white border-light">
-              <img class="card-img-top" src="Images/906008fe-0e4e-4258-a480-7d043f471598_rgb_2016.png">
-              <div class="card-footer bg-danger text-white">
-                No Solar Panels
-              </div>
-            </div>          
-            <div class="card border-light">
-              <img class="card-img-top" src="Images/3459fd10-11ce-49df-a5f2-b3427f1bb83b_rgb_2016.png">
-              <div class="card-footer bg-danger text-white">
-                No Solar Panels
-              </div>        
-            </div>        
-            <div class="card  border-light">
-              <img class="card-img-top" src="Images/24cfc0dc-30fb-429e-a9e2-39123a7c543f_rgb_2016.png">
-              <div class="card-footer bg-success text-white">
-                Solar Panels
-              </div>
-            </div>        
-            <div class="card border-dark">
-              <img class="card-img-top" src="Images/3c169b7e-fce0-4af9-b0ec-510532accce6_rgb_2016.png">
-              <div class="card-footer text-muted">
-                Unknown
-              </div>
-            </div>        
-            <div class="card border-light">
-              <img class="card-img-top" src="Images/3c5e8fdf-812f-4fcc-8095-5a6226562a89_rgb_2016.png">
-              <div class="card-footer text-muted">
-                Unknown
-              </div>
-            </div>        
-            <div class="card border-light">
-              <img class="card-img-top" src="Images/8ad7a8ea-2f48-47fb-84f2-ade5edf146fc_rgb_2016.png">
-              <div class="card-footer text-muted">
-                Unknown
-              </div>
-            </div>        
-            <div class="card border-light">
-              <img class="card-img-top" src="Images/035356b6-e050-45bf-8693-fdfff0b21283_rgb_2016.png">
-              <div class="card-footer text-muted">
-                Unknown
-              </div>
-            </div>
-          </div> 
+           
         </div>
       </div>    
+    </div>
   </div>
 
   <!-- JavaScript libraries needed-->
@@ -124,18 +83,29 @@
     $.print( event );*/
   });
 
+  function cardFromJson(item, active, darkBorder)
+  {
+        var borderColor = darkBorder ? "border-dark" : "border-light";
+        return `<div class="card ${borderColor}">
+                    <img class="card-img-top" src="${item.image_url}">
+                    <div class="card-footer ${item.color} ${item.textstyle}">
+                        ${item.label}
+                    </div>
+                </div>`
+  }
+
+  function carouselItemFromJson(item, active)
+  {
+      var card = cardFromJson(item, active, false);
+      return `<div class="carousel-item ${active}">${card}</div>`  
+  }
+
   $(document).ready(function() {
     $.getJSON("get_images/").done(function(data){
             $.each(data, function(i, item) { 
                 var active = item.active ? 'active' : '';              
-                $(".carousel-inner").append(`<div class="carousel-item ${active}">
-                                <div class="card border-light">
-                                    <img class="card-img-top" src="${item.image_url}">
-                                    <div class="card-footer ${item.color} ${item.textstyle}">
-                                        ${item.label}
-                                    </div>
-                                </div>
-                              </div>`);
+                $(".carousel-inner").append(carouselItemFromJson(item, active));
+                $(".card-deck").append(cardFromJson(item, active, active));
             }); 
       });
   });
