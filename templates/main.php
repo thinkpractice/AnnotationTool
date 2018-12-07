@@ -89,7 +89,7 @@
         return `<div class="card ${borderColor}">
                     <img class="card-img-top" src="${item.image_url}">
                     <div class="card-footer ${item.color} ${item.textstyle}">
-                        ${item.label}
+                        ${item.label}                       
                     </div>
                 </div>`
   }
