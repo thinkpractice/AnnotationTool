@@ -5,7 +5,7 @@ error_reporting(E_ALL | E_STRICT);
 require 'vendor/autoload.php';
 
 $router = new AltoRouter();
-$router->setBasePath('/AnnotationTool');
+//$router->setBasePath('/AnnotationTool');
 
 // setup routes here
 $router->map('GET', '/', function() {
@@ -14,6 +14,10 @@ $router->map('GET', '/', function() {
 
 $router->map('GET', '/get_images/', function(){
     require __DIR__ . '/Images.php';
+});
+
+$router->map('GET', '/get_categories/', function(){
+	require __DIR__ . '/Categories.php';
 });
 
 // match current request url
