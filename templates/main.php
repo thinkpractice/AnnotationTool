@@ -87,8 +87,8 @@
   {
         var borderColor = darkBorder ? "border-dark" : "border-light";
         var categoryItems = [];
-        $.each(categories, function (i, item) {
-            categoryItems.push(`<a class="dropdown-item" href="#">${item.label}</a>`);
+        $.each(categories, function (i, categoryItem) {
+            categoryItems.push(`<a class="dropdown-item" href="set_category/${item.id}/${categoryItem.id}/">${categoryItem.label}</a>`);
         });
         var categoryHtml = categoryItems.join("");
 

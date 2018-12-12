@@ -20,7 +20,7 @@ $router->map('GET', '/get_categories/', function(){
 	require __DIR__ . '/Categories.php';
 });
 
-$router->map('POST', '/set_category/[i:id]/', function($id){
+$router->map('POST', '/set_category/[i:imageId]/[i:categoryId]', function($imageId, $categoryId){
 	require __DIR__ . '/Categories.php';
 });
 
