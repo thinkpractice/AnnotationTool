@@ -20,6 +20,10 @@ $router->map('GET', '/get_categories/', function(){
 	require __DIR__ . '/Categories.php';
 });
 
+$router->map('POST', '/set_category/[i:id]/', function($id){
+	require __DIR__ . '/Categories.php';
+});
+
 // match current request url
 $match = $router->match();
 
