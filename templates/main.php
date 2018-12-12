@@ -96,10 +96,10 @@
                     <img class="card-img-top" src="${item.image_url}">
                     <div class="card-footer ${item.color} ${item.textstyle}">                                             
                         <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           ${item.label}  
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                           ${categoryHtml}
                         </div>
                       </div>
