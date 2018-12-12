@@ -83,29 +83,42 @@
     $.print( event );*/
   });
 
-  function cardFromJson(item, active, darkBorder)
+  function cardFromJson(item, active, categories, darkBorder)
   {
         var borderColor = darkBorder ? "border-dark" : "border-light";
+        var categoryItems = [];
+        $.each(categories, function (i, item) {
+            categoryItems.push(`<a class="dropdown-item" href="#">${item.label}</a>`);
+        });
+        var categoryHtml = categoryItems.join("");
+
         return `<div class="card ${borderColor}">
                     <img class="card-img-top" src="${item.image_url}">
-                    <div class="card-footer ${item.color} ${item.textstyle}">
-                        ${item.label}                       
+                    <div class="card-footer ${item.color} ${item.textstyle}">                                             
+                        <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          ${item.label}  
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                          ${categoryHtml}
+                        </div>
+                      </div>
                     </div>
                 </div>`
   }
 
-  function carouselItemFromJson(item, active)
+  function carouselItemFromJson(item, active, categories)
   {
-      var card = cardFromJson(item, active, false);
+      var card = cardFromJson(item, active, categories, false);
       return `<div class="carousel-item ${active}">${card}</div>`  
   }
 
   $(document).ready(function() {
-    $.getJSON("get_images/").done(function(data){
-            $.each(data, function(i, item) { 
+    $.getJSON("get_images/").done(function(data){            
+            $.each(data.images, function(i, item) { 
                 var active = item.active ? 'active' : '';              
-                $(".carousel-inner").append(carouselItemFromJson(item, active));
-                $(".card-deck").append(cardFromJson(item, active, active));
+                $(".carousel-inner").append(carouselItemFromJson(item, active, data.categories));
+                $(".card-deck").append(cardFromJson(item, active, data.categories, active));
             }); 
       });
   });
