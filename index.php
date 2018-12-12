@@ -21,6 +21,7 @@ $router->map('GET', '/get_categories/', function(){
 });
 
 $router->map('POST', '/set_category/[i:imageId]/[i:categoryId]', function($imageId, $categoryId){
+	echo "test" + $imageId;
 	require __DIR__ . '/Categories.php';
 });
 

@@ -2,7 +2,7 @@
     $requestMethod = $_SERVER['REQUEST_METHOD'];
     if ($requestMethod === 'POST') 
     {
-        echo "id=" + $_POST["id"];
+        echo "imageId=" + $_REQUEST["imageId"] + ", categoryId=" + $_REQUEST["categoryId"];
     }
     else if ($requestMethod === 'GET')
     {
