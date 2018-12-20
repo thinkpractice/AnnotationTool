@@ -7,9 +7,10 @@ drop table if exists users;
 drop table if exists sessions;
 drop table if exists content;
 drop table if exists annotation_items;
+drop table if exists project;
 drop table if exists annotation_type;
 drop table if exists project_type;
-drop table if exists project;
+
 
 -- (Re-)create the database schema
 create table users
@@ -93,6 +94,8 @@ create table content_annotation
     constraint fk_content_annotation_annotation_items foreign key (annotation_item_id) references annotation_items(annotation_item_id)
 );
 
+
+-- Insert some default values into the database
 insert into project_type values (1, 'tile_tagging');
 insert into annotation_type (annotation_type_id, project_type_id, annotation_type_name) values (1, 1, 'solar_panels');
 insert into annotation_items (annotation_item_id, annotation_type_id, item_name) values (1, 1, "Unknown"), (2, 1, "No Solar Panels"), (3, 1, "Solar Panels");
