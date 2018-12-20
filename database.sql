@@ -1,3 +1,17 @@
+use annotations;
+
+-- Drop tables if they already exist
+drop table if exists user_session;
+drop table if exists content_annotation;
+drop table if exists users;
+drop table if exists sessions;
+drop table if exists content;
+drop table if exists annotation_items;
+drop table if exists annotation_type;
+drop table if exists project_type;
+drop table if exists project;
+
+-- (Re-)create the database schema
 create table users
 (
     user_id int not null,
@@ -30,6 +44,15 @@ create table project_type
     constraint pk_project_type primary key (project_type_id)
 );
 
+create table annotation_type
+(
+    annotation_type_id int not null,
+    project_type_id int not null,
+    annotation_type_name varchar(255) not null,
+    constraint pk_annotation_type primary key (annotation_type_id),
+    constraint fk_project_type_id foreign key (project_type_id) references project_type (project_type_id)
+);
+
 create table project
 (
     project_id int not null,
@@ -39,15 +62,6 @@ create table project
     constraint pk_project_id primary key (project_id),
     constraint fk_project_project_type foreign key (project_type_id) references project_type(project_type_id),
     constraint fk_project_annotation_type foreign key (annotation_type_id) references annotation_type(annotation_type_id)
-);
-
-create table annotation_type
-(
-    annotation_type_id int not null,
-    project_type_id int not null,
-    annotation_type_name varchar(255) not null,
-    constraint pk_annotation_type primary key (annotation_type_id),
-    constraint fk_project_type_id foreign key (project_type_id) references project_type (project_type_id)
 );
 
 create table annotation_items
@@ -73,7 +87,7 @@ create table content_annotation
     user_id int not null,
     content_id int not null,
     annotation_item_id int not null,
-    constraint pk_content_annotation primary key (user_id, content_id, category_id),
+    constraint pk_content_annotation primary key (user_id, content_id, annotation_item_id),
     constraint fk_content_annotation_user_id foreign key (user_id) references users(user_id),
     constraint fk_content_annotation_content_id foreign key (content_id) references content(content_id),
     constraint fk_content_annotation_annotation_items foreign key (annotation_item_id) references annotation_items(annotation_item_id)
