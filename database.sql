@@ -11,21 +11,25 @@ drop table if exists project;
 drop table if exists annotation_type;
 drop table if exists project_type;
 
+-- Drop functions if they already exist
+drop function if exists login_user;
+drop function if exists is_valid_session;
 
 -- (Re-)create the database schema
 create table users
 (
     user_id int not null,
     user_name varchar(255),
-    user_password varchar(255),
+    user_password_hash varchar(255),
     constraint pk_users primary key (user_id)
 );
 
 create table sessions
 (
     session_id int not null,
-    session_uuid varchar(36),
+    session_uuid char(36),
     session_start datetime,
+    session_end datetime,
     constraint pk_sessions primary key (session_id)
 );
 
@@ -94,6 +98,24 @@ create table content_annotation
     constraint fk_content_annotation_annotation_items foreign key (annotation_item_id) references annotation_items(annotation_item_id)
 );
 
+-- Stored procedures and functions
+delimiter $$
+
+-- create function login_user(user_name varchar(255)) returns char(36)
+-- begin
+
+-- end;
+
+create function is_valid_session(uuid char(36)) 
+returns boolean deterministic
+begin
+    declare session_valid_until datetime default '2017-04-27 00:00:00';
+    select session_end into session_valid_until from sessions where session_uuid = uuid;
+    return current_timestamp() <= session_valid_until;
+end$$
+
+
+delimiter ;
 
 -- Insert some default values into the database
 insert into project_type values (1, 'tile_tagging');
