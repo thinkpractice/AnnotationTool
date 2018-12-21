@@ -14,6 +14,7 @@ drop table if exists project_type;
 
 -- Drop functions if they already exist
 drop function if exists login_user;
+drop function if exists is_valid_project_for_user;
 drop procedure if exists prolong_session;
 drop function if exists user_for;
 drop function if exists is_valid_session;
@@ -165,6 +166,25 @@ begin
         call prolong_session(uuid);
     end if;
     call empty_result();
+end$$
+
+create function is_valid_project_for_user(uuid char (36), project_id int)
+returns boolean deterministic
+begin
+    declare project_id int default null;
+    declare is_valid_project boolean default false;
+    if (is_valid_session(uuid)) then
+        select p.project_id into project_id from projects as p
+        inner join user_projects as up
+        on p.project_id = up.project_id and up.user_id = user_for(uuid)
+        where p.project_id = project_id;
+        
+        call prolong_session(uuid);
+        if (project_id is not null) then
+            set is_valid_project := true;
+        end if;
+    end if;
+    return is_valid_project;
 end$$
 
 delimiter ;
