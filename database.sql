@@ -14,6 +14,9 @@ drop table if exists project_type;
 
 -- Drop functions if they already exist
 drop function if exists login_user;
+drop function if exists get_user_id;
+drop function if exists session_for;
+drop function if exists create_session;
 drop function if exists is_valid_project_for_user;
 drop procedure if exists prolong_session;
 drop function if exists user_for;
@@ -116,10 +119,56 @@ create table content_annotation
 -- Stored procedures and functions
 delimiter $$
 
--- create function login_user(user_name varchar(255)) returns char(36)
--- begin
+create function get_user_id(user_name varchar(255), user_password_hash varchar(255))
+returns boolean deterministic
+begin
+    declare user_id int default -1;
+    select user_id into user_id from users
+    where user_name = user_name and user_password_hash = user_password_hash;
 
--- end;
+    return user_id;
+end$$
+
+create function create_session(user_id)
+returns char(36) deterministic
+begin
+    session_hash = uuid();
+    insert into sessions ()
+end$$
+
+create function session_for(user_id int)
+returns char(36) deterministic
+begin
+    declare session_id int default -1;
+    declare session_hash char(36) default null;
+    
+    select s.session_id into session_id, s.session_uuid into session_hash from sessions as s
+    inner join user_session as us on s.session_id = us.session_id and us.user_id = user_id;
+
+    if (session_id is not null and not is_valid_session(user_id))
+        delete from user_session where user_id = user_id and session_id = session_id;
+        delete from sessions where session_id = session_id;
+        set session_hash := null;
+    end if;
+
+    if (isnull(session_hash)) then
+        session_hash = create_session(user_id);
+    end if;
+
+    return session_hash;
+end$$
+
+create function login_user(user_name varchar(255), user_password_hash varchar(255)) 
+returns char(36) deterministic
+begin
+    declare user_id int default -1;
+    declare session_hash char(36) default null;
+    set user_id := get_user_id(user_name, user_password_hash);
+    if (user_id > -1) then
+        set session_hash := session_for(user_id);
+    end if;
+    return session_hash; 
+end$$
 
 create function is_valid_session(uuid char(36)) 
 returns boolean deterministic
