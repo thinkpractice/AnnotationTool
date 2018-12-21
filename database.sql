@@ -14,9 +14,11 @@ drop table if exists project_type;
 
 -- Drop functions if they already exist
 drop function if exists login_user;
-drop function if exists prolong_session;
+drop procedure if exists prolong_session;
+drop function if exists user_for;
 drop function if exists is_valid_session;
-
+drop procedure if exists empty_result;
+drop procedure if exists get_projects;
 
 -- (Re-)create the database schema
 create table users
@@ -133,6 +135,36 @@ begin
         set session_end = date_add(now(), INTERVAL 5 MINUTE)
         where session_uuid = uuid;
     end if;
+end$$
+
+create function user_for(uuid char(36))
+returns int deterministic
+begin
+    declare user_id int default -1;
+    if (is_valid_session(uuid)) then
+        select user_id into user_id        
+        from user_session as us
+        inner join sessions as s
+        on us.user_id = s.user_id and s.session_uuid = uuid;
+    end if;    
+    return user_id;
+end$$
+
+
+create procedure empty_result()  
+begin
+    select 1 from dual where false;
+end$$
+
+create procedure get_projects(uuid char(36))
+begin
+    if (is_valid_session(uuid)) then
+        select p.project_name from projects as p
+        inner join user_projects as up
+        on p.project_id = up.project_id and up.user_id = user_for(uuid);
+        call prolong_session(uuid);
+    end if;
+    call empty_result();
 end$$
 
 delimiter ;
