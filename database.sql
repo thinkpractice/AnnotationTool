@@ -27,7 +27,7 @@ drop procedure if exists get_projects;
 -- (Re-)create the database schema
 create table users
 (
-    user_id int not null,
+    user_id int not null auto_increment,
     user_name varchar(255),
     user_password_hash varchar(255),
     constraint pk_users primary key (user_id)
@@ -35,20 +35,13 @@ create table users
 
 create table sessions
 (
-    session_id int not null,
+    session_id int not null auto_increment,
+    user_id int not null,
     session_uuid char(36),
     session_start datetime,
     session_end datetime,
-    constraint pk_sessions primary key (session_id)
-);
-
-create table user_session
-(
-    user_id int not null,
-    session_id int not null,
-    constraint pk_user_session primary key (user_id, session_id),
-    constraint fk_user_user_session foreign key (user_id) references users(user_id),
-    constraint fk_session_user_session foreign key (session_id) references sessions(session_id)
+    constraint pk_sessions primary key (session_id),
+    constraint fk_user_user_session foreign key (user_id) references users(user_id)
 );
 
 create table project_type
@@ -80,8 +73,8 @@ create table project
 
 create table user_projects
 (
-    project_id int not null,
     user_id int not null,
+    project_id int not null,    
     constraint pk_user_projects primary key (project_id, user_id),
     constraint fk_user_projects_project foreign key (project_id) references project(project_id),
     constraint fk_user_projects_user foreign key (user_id) references users(user_id)
@@ -132,8 +125,11 @@ end$$
 create function create_session(user_id)
 returns char(36) deterministic
 begin
-    session_hash = uuid();
-    insert into sessions ()
+    declare session_hash char(36) default null;
+    set session_hash := uuid();
+    insert into sessions (user_id, session_uuid, session_start, session_end)
+    values (user_id, session_hash, now(), date_add(now(), INTERVAL 20 MINUTE));
+    return session_hash;
 end$$
 
 create function session_for(user_id int)
@@ -142,12 +138,12 @@ begin
     declare session_id int default -1;
     declare session_hash char(36) default null;
     
-    select s.session_id into session_id, s.session_uuid into session_hash from sessions as s
-    inner join user_session as us on s.session_id = us.session_id and us.user_id = user_id;
+    select s.session_id into session_id, s.session_uuid into session_hash 
+    from sessions as s 
+    where s.session_id = us.session_id and s.user_id = user_id;
 
     if (session_id is not null and not is_valid_session(user_id))
-        delete from user_session where user_id = user_id and session_id = session_id;
-        delete from sessions where session_id = session_id;
+        delete from sessions where session_id = session_id and user_id = user_id;
         set session_hash := null;
     end if;
 
@@ -168,6 +164,17 @@ begin
         set session_hash := session_for(user_id);
     end if;
     return session_hash; 
+end$$
+
+create function hash_for(user_name varchar(255))
+returns varchar(255) deterministic
+begin
+    declare user_password_hash varchar(255) default null;
+    select user_password_hash into user_password_hash
+    from users 
+    where user_name = user_name;
+
+    return user_password_hash;
 end$$
 
 create function is_valid_session(uuid char(36)) 
