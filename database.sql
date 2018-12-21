@@ -3,6 +3,7 @@ use annotations;
 -- Drop tables if they already exist
 drop table if exists user_session;
 drop table if exists content_annotation;
+drop table if exists user_projects;
 drop table if exists users;
 drop table if exists sessions;
 drop table if exists content;
@@ -13,7 +14,9 @@ drop table if exists project_type;
 
 -- Drop functions if they already exist
 drop function if exists login_user;
+drop function if exists prolong_session;
 drop function if exists is_valid_session;
+
 
 -- (Re-)create the database schema
 create table users
@@ -69,6 +72,15 @@ create table project
     constraint fk_project_annotation_type foreign key (annotation_type_id) references annotation_type(annotation_type_id)
 );
 
+create table user_projects
+(
+    project_id int not null,
+    user_id int not null,
+    constraint pk_user_projects primary key (project_id, user_id),
+    constraint fk_user_projects_project foreign key (project_id) references project(project_id),
+    constraint fk_user_projects_user foreign key (user_id) references users(user_id)
+);
+
 create table annotation_items
 (
     annotation_item_id int not null, 
@@ -114,6 +126,14 @@ begin
     return current_timestamp() <= session_valid_until;
 end$$
 
+create procedure prolong_session(uuid char(36))
+begin
+    if (is_valid_session(uuid)) then        
+        update sessions 
+        set session_end = date_add(now(), INTERVAL 5 MINUTE)
+        where session_uuid = uuid;
+    end if;
+end$$
 
 delimiter ;
 
